@@ -50,11 +50,11 @@ client.on('interactionCreate', async interaction => {
                 res.splice(i, 1);
                 let newarray = JSON.stringify(res);
                 fs.writeFileSync('eleves.json', newarray);
-                interaction.reply(":white_check_mark: :white_check_mark: Tu n'es plus dans la liste ! :white_check_mark: :white_check_mark: ");
+                interaction.reply(":white_check_mark: :white_check_mark: Tu n'es plus dans la liste ! :white_check_mark: :white_check_mark:");
             }
         }
         if(!exist){
-            interaction.reply(":x: :x: Tu n'es même pas dans la liste. :x: :x: ");
+            interaction.reply(":x: :x: Tu n'es même pas dans la liste. :x: :x:");
         }
 	} else if (commandName === 'liststudents') {
 		let request = fs.readFileSync('eleves.json');
@@ -66,7 +66,55 @@ client.on('interactionCreate', async interaction => {
             count++;
         });
         interaction.reply(msg);
-	}
+	} else if (commandName === 'addevent') {
+        let date = new Date();
+        let dateNow = Math.floor(dateStamp / 1000);
+        let request = fs.readFileSync('inProgress.json');
+        let res = JSON.parse(request);
+        console.log(res[5]+' - '+dateNow);
+        if(res[5] > dateNow){
+            interaction.reply(":x: :x: Un évènement est déjà en cours :x: :x:");
+            return;
+        }
+        res[0] = 1;
+        res[1] = interaction.options.getInteger("nb_eleves");
+
+        res[2] = interaction.options.getString("heure_de_fin");
+        let split = res[2].split(/[\sh:H/]+/);
+        if(split[0].toString().length == 1){
+            res[2] = "0"+split[0]+":"+split[1];
+        } else {
+            res[2] = split[0]+":"+split[1];
+        }
+
+        let hours = date.getHours().toString();
+        if(hours.length == 1)
+            hours="0"+hours;
+        let minutes = date.getMinutes().toString();
+        if(minutes.length == 1)
+            minutes="0"+minutes;
+        let seconds = date.getSeconds().toString();
+        if(seconds.length == 1)
+            seconds="0"+seconds;
+
+        res[3] = hours+":"+minutes;
+        res[4] = (((res[2].slice(0,2)-res[3].slice(0,2))*60)+(res[2].slice(3,5)-res[3].slice(3,5)))*60;
+        if(res[4] <= 0){
+            interaction.reply(":x: :x: Tu ne peux pas commmencer un évènement avec une heure qui est déjà passée :x: :x:");
+            return;
+        }
+        res[5] = dateNow+res[4];
+        let newarray = JSON.stringify(res);
+        fs.writeFileSync('inProgress.json', newarray);
+        interaction.reply(":white_check_mark: :white_check_mark: L'évènement a été créé avec succès ! :white_check_mark: :white_check_mark:");
+
+	} else if (commandName === 'delevent') {
+
+        let res = [];
+        let newarray = JSON.stringify(res);
+        fs.writeFileSync('inProgress.json', newarray);
+        interaction.reply(":white_check_mark: :white_check_mark: L'évènement en cours a été supprimé ! :white_check_mark: :white_check_mark: ");
+    
 });
  
 const onMessage = (message) => {
@@ -82,18 +130,6 @@ const onMessage = (message) => {
             message.reply("Vous voulez donc avoir "+message.content+" élèves dans se cours.");
         });
     }
-
-    //Initialiser un évènement cours
-    /*if(message.content.slice(0,9) === "!addsheet"){
-        if(!Number.isInteger(message.content.slice(10))){
-            message.reply(":x: :x: Le paramètre doit être un nombre. :x: :x: ");
-            return;
-        }
-        let request = fs.readFileSync('eleves.json');
-        let res = JSON.parse(request);
-        res[0] = 1;
-        res[1] = new Date().getTime();
-    }*/
 };
 
 const onReady = (message) => {
