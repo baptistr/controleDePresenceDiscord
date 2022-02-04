@@ -37,6 +37,9 @@ const commands = [
 	new SlashCommandBuilder()
 	.setName('delevent')
 	.setDescription("Supprime l'évènement en cours"),
+	new SlashCommandBuilder()
+	.setName('joinevent')
+	.setDescription("Rejoins l'évènement en cours")
 ]
 	.map(command => command.toJSON());
 

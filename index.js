@@ -1,7 +1,7 @@
 const { Client, Intents } = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
-const { token, clientId, guildId } = require('./config.json');
+const { token, clientId, guildId, channel } = require('./config.json');
 
 const client = new Client({ 
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
@@ -68,11 +68,11 @@ client.on('interactionCreate', async interaction => {
         interaction.reply(msg);
 	} else if (commandName === 'addevent') {
         let date = new Date();
-        let dateNow = Math.floor(dateStamp / 1000);
+        let dateNow = Math.floor(Date.now() / 1000);
         let request = fs.readFileSync('inProgress.json');
         let res = JSON.parse(request);
         console.log(res[5]+' - '+dateNow);
-        if(res[5] > dateNow){
+        if(res[0] == 1){
             interaction.reply(":x: :x: Un évènement est déjà en cours :x: :x:");
             return;
         }
@@ -104,9 +104,16 @@ client.on('interactionCreate', async interaction => {
             return;
         }
         res[5] = dateNow+res[4];
+        res[6] = [];
         let newarray = JSON.stringify(res);
         fs.writeFileSync('inProgress.json', newarray);
         interaction.reply(":white_check_mark: :white_check_mark: L'évènement a été créé avec succès ! :white_check_mark: :white_check_mark:");
+        setTimeout(() => {
+            client.channels.cache.get(channel).send(":warning: :warning: L'évènement est terminé, tu peux maintenant en initialiser un nouveau ! :warning: :warning:");
+            res = [0];
+            let newarray = JSON.stringify(res);
+            fs.writeFileSync('inProgress.json', newarray);
+        }, res[4]*1000);
 
 	} else if (commandName === 'delevent') {
 
@@ -114,7 +121,34 @@ client.on('interactionCreate', async interaction => {
         let newarray = JSON.stringify(res);
         fs.writeFileSync('inProgress.json', newarray);
         interaction.reply(":white_check_mark: :white_check_mark: L'évènement en cours a été supprimé ! :white_check_mark: :white_check_mark: ");
-    
+
+    }  else if (commandName === 'joinevent') {
+
+        let request = fs.readFileSync('inProgress.json');
+        let res = JSON.parse(request);
+        if(res[0] == 0){
+            interaction.reply(":x: :x: Aucun évènement est en cours :x: :x:");
+            return;
+        }
+        let request2 = fs.readFileSync('eleves.json');
+        let eleves = JSON.parse(request2);
+        res[6].forEach(element => {
+            if(element == interaction.user.tag){
+                interaction.reply(":x: :x: Tu es déjà inscrit à l'évènement :x: :x:");
+                return;
+            }
+        });
+        for(let i = 0; i<eleves.length; i++){
+            if(eleves[i][0] == interaction.user.tag){
+                res[6].push(eleves[i][1]);
+                interaction.reply(":white_check_mark: :white_check_mark: Tu as été inscrit avec succès :white_check_mark: :white_check_mark:");
+                let newarray = JSON.stringify(res);
+                fs.writeFileSync('inProgress.json', newarray);
+                return;
+            }
+        }
+        interaction.reply(":x: :x: Le bot ne te connait pas ... fait \"/addme\" et recommence cette commande ! :x: :x:");
+    }
 });
  
 const onMessage = (message) => {
