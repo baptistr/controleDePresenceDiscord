@@ -1,7 +1,8 @@
 const { Client, Intents } = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
-const { token, clientId, guildId, channel } = require('./config.json');
+const { token, clientId, guildId, channel, mongoPath } = require('./config.json');
+const MongoClient = require('mongodb').MongoClient;
 
 const client = new Client({ 
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
@@ -108,11 +109,33 @@ client.on('interactionCreate', async interaction => {
         let newarray = JSON.stringify(res);
         fs.writeFileSync('inProgress.json', newarray);
         interaction.reply(":white_check_mark: :white_check_mark: L'évènement a été créé avec succès ! :white_check_mark: :white_check_mark:");
+
         setTimeout(() => {
+
+            let request = fs.readFileSync('inProgress.json');
+            let res = JSON.parse(request);
+
             client.channels.cache.get(channel).send(":warning: :warning: L'évènement est terminé, tu peux maintenant en initialiser un nouveau ! :warning: :warning:");
+            let newEvent = {
+                duration:res[4],
+                endEvent:res[5],
+                student:res[6]
+            }
+            
+            MongoClient.connect(mongoPath, function(err, db) {
+                if (err) throw err;
+                let dbo = db.db("present");
+                dbo.collection("present").insertOne(newEvent, function(err, res) {
+                    if (err) throw err;
+                    console.log("insert : "+newEvent);
+                    db.close();
+                });
+            });
+
             res = [0];
             let newarray = JSON.stringify(res);
             fs.writeFileSync('inProgress.json', newarray);
+            
         }, res[4]*1000);
 
 	} else if (commandName === 'delevent') {
