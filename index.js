@@ -3,6 +3,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { token, clientId, guildId, channel, mongoPath } = require('./config.json');
 const MongoClient = require('mongodb').MongoClient;
+const {generatePdf} = require("./generate-pdf.js");
 
 const client = new Client({ 
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
@@ -72,7 +73,6 @@ client.on('interactionCreate', async interaction => {
         let dateNow = Math.floor(Date.now() / 1000);
         let request = fs.readFileSync('inProgress.json');
         let res = JSON.parse(request);
-        console.log(res[5]+' - '+dateNow);
         if(res[0] == 1){
             interaction.reply(":x: :x: Un évènement est déjà en cours :x: :x:");
             return;
@@ -119,6 +119,7 @@ client.on('interactionCreate', async interaction => {
             let newEvent = {
                 duration:res[4],
                 endEvent:res[5],
+                pdfPath:'pdf/appel-'+res[5]+'.pdf',
                 student:res[6]
             }
             
@@ -127,10 +128,11 @@ client.on('interactionCreate', async interaction => {
                 let dbo = db.db("present");
                 dbo.collection("present").insertOne(newEvent, function(err, res) {
                     if (err) throw err;
-                    console.log("insert : "+newEvent);
                     db.close();
                 });
             });
+
+            generatePdf(res);
 
             res = [0];
             let newarray = JSON.stringify(res);
@@ -189,7 +191,6 @@ client.on('interactionCreate', async interaction => {
         let count = 1;
         res[6].forEach(element => {
             for (const [key, value] of Object.entries(element)) {
-                console.log(`${key}: ${value}`);
                 msg += count+" : "+key+" - "+value+"\n";
             }
             count++;
