@@ -104,7 +104,7 @@ dist
 .tern-port
 
 # Private Info
-config.json
+*.json
 
 # pdf generated
-.pdf
+*.pdf
