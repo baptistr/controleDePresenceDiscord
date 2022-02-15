@@ -200,6 +200,16 @@ client.on('interactionCreate', async interaction => {
 });
 
 const onReady = (message) => {
+
+    if (!fs.existsSync("eleves.json")) {
+        console.log("eleves.json créé");
+        fs.writeFileSync('eleves.json', JSON.stringify([]));
+    }
+    if (!fs.existsSync("inProgress.json")) {
+        console.log("inProgress.json créé")
+        fs.writeFileSync('inProgress.json', JSON.stringify([0]));
+    }
+
     console.log("Je suis prêt à vous écouter !");
 };
 
