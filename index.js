@@ -163,7 +163,10 @@ client.on('interactionCreate', async interaction => {
         });
         for(let i = 0; i<eleves.length; i++){
             if(eleves[i][0] == interaction.user.tag){
-                res[6].push(eleves[i][1]);
+                eleve = {};
+                eleve.name = eleves[i][1];
+                eleve.ts = Math.floor(Date.now() / 1000);
+                res[6].push(eleve);
                 interaction.reply(":white_check_mark: :white_check_mark: Tu as été inscrit avec succès :white_check_mark: :white_check_mark:");
                 let newarray = JSON.stringify(res);
                 fs.writeFileSync('inProgress.json', newarray);
