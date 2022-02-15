@@ -7,6 +7,7 @@ const commands = [
 	new SlashCommandBuilder()
 	.setName('addme')
 	.setDescription("Sinscrire pour que le BOT puisse me connaître"),
+
 	new SlashCommandBuilder()
 	.setName('setme')
 	.setDescription('Mettre à jour mes informations (prénom nom)')
@@ -15,12 +16,15 @@ const commands = [
 		.setDescription('Entre ton prénom et ton nom')
 		.setRequired(true)
 	),
+
 	new SlashCommandBuilder()
 	.setName('delme')
 	.setDescription('Je supprime les données que possède le BOT'),
+
     new SlashCommandBuilder()
 	.setName('liststudents')
 	.setDescription('Afficher la liste de tous les étudiants enregistrés par le BOT'),
+
 	new SlashCommandBuilder()
 	.setName('addevent')
 	.setDescription('Initialiser un évènement cours')
@@ -34,12 +38,18 @@ const commands = [
 		.setDescription('Heure de fin (hh:mm)')
 		.setRequired(true)
 	),
+
 	new SlashCommandBuilder()
 	.setName('delevent')
 	.setDescription("Supprime l'évènement en cours"),
+
 	new SlashCommandBuilder()
 	.setName('joinevent')
-	.setDescription("Rejoins l'évènement en cours")
+	.setDescription("Rejoins l'évènement en cours"),
+
+	new SlashCommandBuilder()
+	.setName('liststudentsevent')
+	.setDescription("Afficher la liste des étudiants en cours")
 ]
 	.map(command => command.toJSON());
 

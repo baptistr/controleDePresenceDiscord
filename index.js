@@ -174,28 +174,33 @@ client.on('interactionCreate', async interaction => {
             }
         }
         interaction.reply(":x: :x: Le bot ne te connait pas ... fait \"/addme\" et recommence cette commande ! :x: :x:");
+
+    } else if(commandName === "liststudentsevent"){
+        let request = fs.readFileSync('inProgress.json');
+        let res = JSON.parse(request);
+        if(res[0] == 0){
+            interaction.reply(":x: :x: Aucun évènement est en cours :x: :x:");
+            return;
+        }else if(res[6].length == 0){
+            interaction.reply(":x: :x: La liste est vide :x: :x:");
+            return;
+        }
+        let msg = "";
+        let count = 1;
+        res[6].forEach(element => {
+            for (const [key, value] of Object.entries(element)) {
+                console.log(`${key}: ${value}`);
+                msg += count+" : "+key+" - "+value+"\n";
+            }
+            count++;
+        });
+        interaction.reply(msg);
     }
 });
- 
-const onMessage = (message) => {
-
-    if(message.content === "!present"){
-        message.reply("Combien d'élève doivent assister aux cours ?");
-        const collector = message.channel.createMessageCollector({ message, time: 15000 });
-        console.log(collector)
-        collector.on('collect', message => {
-            if(message.author.bot === true){
-                return;
-            }
-            message.reply("Vous voulez donc avoir "+message.content+" élèves dans se cours.");
-        });
-    }
-};
 
 const onReady = (message) => {
     console.log("Je suis prêt à vous écouter !");
 };
 
 client.on("ready", onReady);
-client.on("message", onMessage);
 client.login(token);
