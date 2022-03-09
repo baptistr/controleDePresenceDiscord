@@ -1,12 +1,15 @@
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, Permissions } = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
-const { token, clientId, guildId, channel, mongoPath } = require('./config.json');
+const { token, clientId, guildId, channel, mongoPath, adminRole } = require('./config.json');
 const MongoClient = require('mongodb').MongoClient;
 const {generatePdf} = require("./generate-pdf.js");
+const {convertVCS} = require("./convert-vsc-to-json/convert-vcs-to-json.js");
+const { memberNicknameMention } = require('@discordjs/builders');
 
 const client = new Client({ 
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+    permissions : [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.VIEW_CHANNEL]
 });
 
 client.on('interactionCreate', async interaction => {
@@ -59,6 +62,12 @@ client.on('interactionCreate', async interaction => {
             interaction.reply(":x: :x: Tu n'es même pas dans la liste. :x: :x:");
         }
 	} else if (commandName === 'liststudents') {
+
+        if(!interaction.member.roles.cache.has('951044528251473970')){
+            interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
+            return;
+        }
+        
 		let request = fs.readFileSync('eleves.json');
         let res = JSON.parse(request);
         let msg = "";
@@ -69,6 +78,11 @@ client.on('interactionCreate', async interaction => {
         });
         interaction.reply(msg);
 	} else if (commandName === 'addevent') {
+
+        if(!interaction.member.roles.cache.has('951044528251473970')){
+            interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
+            return;
+        }
         let date = new Date();
         let dateNow = Math.floor(Date.now() / 1000);
         let request = fs.readFileSync('inProgress.json');
@@ -142,6 +156,11 @@ client.on('interactionCreate', async interaction => {
 
 	} else if (commandName === 'delevent') {
 
+        if(!interaction.member.roles.cache.has('951044528251473970')){
+            interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
+            return;
+        }
+
         let res = [];
         let newarray = JSON.stringify(res);
         fs.writeFileSync('inProgress.json', newarray);
@@ -178,6 +197,7 @@ client.on('interactionCreate', async interaction => {
         interaction.reply(":x: :x: Le bot ne te connait pas ... fait \"/addme\" et recommence cette commande ! :x: :x:");
 
     } else if(commandName === "liststudentsevent"){
+        
         let request = fs.readFileSync('inProgress.json');
         let res = JSON.parse(request);
         if(res[0] == 0){
@@ -209,6 +229,8 @@ const onReady = (message) => {
         console.log("inProgress.json créé")
         fs.writeFileSync('inProgress.json', JSON.stringify([0]));
     }
+
+    convertVCS('GPU_semaine_6_FIL');
 
     console.log("Je suis prêt à vous écouter !");
 };
