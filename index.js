@@ -221,6 +221,13 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+//tâche répétitive (toute les minutes)
+//vérifie si d'autres cours ont été programmé
+cron.schedule('* * * * *', () => {
+    convertVCS();
+});
+
+
 //tâche répétitive (toute les 30 secondes)
 //elle permet de voir si un évènement futur va bientot commencé
 cron.schedule('30,59 * * * * *', () => {
@@ -260,7 +267,15 @@ cron.schedule('30,59 * * * * *', () => {
         return;
     }
 
-    console.log("Un évènement est en cours");
+    console.log("Un évènement a commencé");
+
+    //pour éviter d'avoir des évènements obselètes dans le fichier
+    edt.forEach(element => {
+        if(element[2] < dateNow){
+            let myIndex = edt.indexOf(element);
+            edt.splice(myIndex, 1);
+        }
+    });
 
     //je renvoie le json avec la modification
     edt = JSON.stringify(edt);
@@ -324,9 +339,6 @@ const onReady = (message) => {
         console.log("edt.json créé")
         fs.writeFileSync('edt.json', JSON.stringify([]));
     }
-
-    //convertVCS('GPU_semaine_10_FIL');
-
     console.log("Je suis prêt à vous écouter !");
 };
 
