@@ -26,7 +26,54 @@ function convertVCS($fichier){
     //dernière objet inutile
     objEvent.splice(-1,1);
 
-    return objEvent;
+    //j'insère dans un tableau les informations que nous voulons garder
+    let tabCours = [];
+    objEvent.forEach(element => {
+
+        //conversion du format des dates en ts
+        let maDate = [];
+        maDate[0] = element.DTSTART.substr(0,4) // annee
+        maDate[1] = element.DTSTART.substr(4,2)-1 // mois
+        maDate[2] = element.DTSTART.substr(6,2) // jour
+        maDate[3] = element.DTSTART.substr(9,2) // heure
+        maDate[4] = element.DTSTART.substr(11,2) // minute
+        maDate = new Date( maDate[0], maDate[1], maDate[2], maDate[3], maDate[4]);
+
+        let maDateEnd = [];
+        maDate[0] = element.DTEND.substr(0,4) // annee
+        maDate[1] = element.DTEND.substr(4,2)-1 // mois
+        maDate[2] = element.DTEND.substr(6,2) // jour
+        maDate[3] = element.DTEND.substr(9,2) // heure
+        maDate[4] = element.DTEND.substr(11,2) // minute
+        maDateEnd = new Date( maDate[0], maDate[1], maDate[2], maDate[3], maDate[4]);
+
+        tabCours.push([
+            element.UID,
+            maDate.getTime()/1000,
+            maDateEnd.getTime()/1000,
+        ]);
+    });
+
+    let req = fs.readFileSync('edt.json');
+    let edt = JSON.parse(req);
+
+    //je vérifie qu'il n'y a pas déjà les mêmes cours dans edt.json
+    edt.forEach(edtElement => {
+        tabCours.forEach(coursElement => {
+            if(edtElement[0] == coursElement[0]){
+                let myIndex = tabCours.indexOf(coursElement);
+                tabCours.splice(myIndex, 1);
+            }
+        });
+    });
+
+    //j'ajoute les nouveaux cours dans edt
+    edt = edt.concat(tabCours);
+
+    console.log("edt.json possède maintenant "+edt.length+" cours qui sont prévus, vous en avez ajouté(s) "+tabCours.length);
+
+    let newarray = JSON.stringify(edt);
+    fs.writeFileSync('edt.json', newarray);
 }
 
 module.exports = { convertVCS };

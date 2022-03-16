@@ -27,7 +27,7 @@ client.on('interactionCreate', async interaction => {
             }
         });
         if(!exist){
-            res.push([interaction.user.tag, ""]);
+            res.push([interaction.user.tag, ":grey_question: :grey_question: :grey_question:"]);
             let newarray = JSON.stringify(res);
             fs.writeFileSync('eleves.json', newarray);
             await interaction.reply(":white_check_mark: :white_check_mark: @"+interaction.user.tag+" a été ajouté à la liste des élèves. :white_check_mark: :white_check_mark: ");
@@ -63,11 +63,11 @@ client.on('interactionCreate', async interaction => {
         }
 	} else if (commandName === 'liststudents') {
 
-        if(!interaction.member.roles.cache.has('951044528251473970')){
+        if(!interaction.member.roles.cache.has(adminRole)){
             interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
             return;
         }
-        
+
 		let request = fs.readFileSync('eleves.json');
         let res = JSON.parse(request);
         let msg = "";
@@ -79,7 +79,7 @@ client.on('interactionCreate', async interaction => {
         interaction.reply(msg);
 	} else if (commandName === 'addevent') {
 
-        if(!interaction.member.roles.cache.has('951044528251473970')){
+        if(!interaction.member.roles.cache.has(adminRole)){
             interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
             return;
         }
@@ -156,7 +156,7 @@ client.on('interactionCreate', async interaction => {
 
 	} else if (commandName === 'delevent') {
 
-        if(!interaction.member.roles.cache.has('951044528251473970')){
+        if(!interaction.member.roles.cache.has(adminRole)){
             interaction.reply(":x: :x: Tu n'es pas un admin :x: :x:");
             return;
         }
@@ -229,8 +229,12 @@ const onReady = (message) => {
         console.log("inProgress.json créé")
         fs.writeFileSync('inProgress.json', JSON.stringify([0]));
     }
+    if (!fs.existsSync("edt.json")) {
+        console.log("edt.json créé")
+        fs.writeFileSync('edt.json', JSON.stringify([]));
+    }
 
-    convertVCS('GPU_semaine_6_FIL');
+    convertVCS('GPU_semaine_10_FIL');
 
     console.log("Je suis prêt à vous écouter !");
 };

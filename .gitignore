@@ -106,6 +106,7 @@ dist
 # Private Info
 *.json
 *.vcs
+.vscode
 
 # pdf generated
 *.pdf
