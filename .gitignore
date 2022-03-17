@@ -107,6 +107,7 @@ dist
 *.json
 *.vcs
 .vscode
+*.png
 
 # pdf generated
 *.pdf

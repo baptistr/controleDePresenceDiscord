@@ -1,6 +1,5 @@
-function convertVCS(){
+function convertVCS(fs){
 
-    const fs = require('fs');
     const path = require('path');
 
     //cherche tous les fichiers avec un .vcs
@@ -14,8 +13,6 @@ function convertVCS(){
             files.splice(myIndex, 1);
         }
     });
-
-    console.log("files contient : "+files.length);
 
     if(files.length == 0){
         return;
