@@ -1,5 +1,4 @@
 function checkEvents(fs, client, channel){
-    console.log("ok");
 
     //Si il y a un évènement en cours, je ne vais pas plus loin
     let request = fs.readFileSync('inProgress.json');
@@ -20,9 +19,7 @@ function checkEvents(fs, client, channel){
     edt.forEach(element => {
         if(dateNow > element[1] && dateNow < element[2]){
             //si oui, je récupère le l'heure du début et de fin de l'évènement
-            console.log("ping1");
             client.channels.cache.get(channel).send(":warning: :warning: Un évènement va bientôt démarrer ! :warning: :warning:");
-            console.log("ping2");
 
             heureDebut = element[1];
             heureFin = element[2];
