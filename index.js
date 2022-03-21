@@ -1,7 +1,7 @@
 const { Client, Intents, Permissions } = require('discord.js');
 require('dotenv').config();
 const fs = require('fs');
-const { token, clientId, guildId, channel, mongoPath, adminRole } = require('./config.json');
+const { token, clientId, guildId, channel, mongoPath, adminRole } = require('./config.js');
 const MongoClient = require('mongodb').MongoClient;
 const {generatePdf} = require("./generate-pdf.js");
 const {convertVCS} = require("./convert-vsc-to-json/convert-vcs-to-json.js");
