@@ -1,0 +1,8 @@
+{
+    "clientId" : "clientId", 
+    "guildId" : "guildId", 
+    "token" : "token",
+    "channel" : "channel",
+    "mongoPath" : "mongoPath",
+    "adminRole" : "adminRole"
+}

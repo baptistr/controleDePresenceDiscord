@@ -105,6 +105,7 @@ dist
 
 # Private Info
 *.json
+!config.json
 *.vcs
 .vscode
 *.png
